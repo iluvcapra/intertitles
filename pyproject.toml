@@ -38,6 +38,7 @@ dynamic = [
 requires-python = "~=3.8"
 dependencies = [
     "ffmpeg-generator >= 1.0.6",
+    "numpy >= 1.26.0"
 ]
 keywords = [
     "video",
