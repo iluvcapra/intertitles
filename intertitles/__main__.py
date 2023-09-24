@@ -2,9 +2,6 @@ from ffmpeg import vfilters, vtools, avfilters, input, input_source
 
 from collections import namedtuple
 import shlex
-from typing import Tuple
-
-TextFlow = namedtuple("TextFlow", ["alignment", "text" ])
 
 import subprocess
 
