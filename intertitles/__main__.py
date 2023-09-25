@@ -88,7 +88,7 @@ def parse_markup(markup: str):
             elif p[0] == ".img":
                 yield from parse_img(p[1:])
             else:
-                raise RuntimeError
+                raise RuntimeError()
         else:
             yield from parse_line(p)
 
@@ -103,9 +103,6 @@ def parse_markup(markup: str):
 
 
 def main():
-    # plate = ""
-    #in0 = input(plate).video 
-
     markup_example = """
 .bg none
 .fill white 
@@ -121,8 +118,8 @@ TITLE / Artist / Company
 .gv West
 .pointsize 36
 This is some information on TITLE.
-.gv East
-Some right-aligned text.
+# .gv East
+# Some right-aligned text.
 """
 
     command = ["convert"] + list(parse_markup(markup_example)) + ["output_gen.tiff"]
