@@ -92,7 +92,6 @@ def parse_markup(markup: str):
         else:
             yield from parse_line(p)
 
-
     yield "-append"
     yield "-extent"
     yield f"{state['safe_area'][0]}x{state['safe_area'][1]}"
