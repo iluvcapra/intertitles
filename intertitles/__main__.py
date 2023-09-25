@@ -41,7 +41,7 @@ def parse_markup(markup: str):
         yield rest[0]
 
     def parse_textsize(rest):
-        yield "-textsize"
+        yield "-pointsize"
         yield rest[0]
 
     def parse_safe_area(rest):
@@ -81,12 +81,12 @@ def parse_markup(markup: str):
                 yield from parse_font(p[1:])
             elif p[0] == ".textsize":
                 yield from parse_textsize(p[1:])
+            elif p[0] == ".img":
+                yield from parse_img(p[1:])            
             elif p[0] == ".safe_area":
                 parse_safe_area(p[1:])
             elif p[0] == ".frame_size":
                 parse_frame_size(p[1:])
-            elif p[0] == ".img":
-                yield from parse_img(p[1:])
             else:
                 raise RuntimeError()
         else:
@@ -109,7 +109,7 @@ def main():
 .frame_size 1920 1080
 .safe_area 1620 780
 .gv Center
-.img JH.tiff JH.tiff 
+.img 1.tiff 1.tiff 1.tiff 
 .gv West
 .textsize 56
 TITLE / Artist / Company
