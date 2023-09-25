@@ -1,6 +1,5 @@
 from ffmpeg import vfilters, vtools, avfilters, input, input_source
 
-from collections import namedtuple
 import shlex
 
 import subprocess
@@ -51,6 +50,17 @@ def parse_markup(markup: str):
     def parse_frame_size(rest):
         state['frame_size'] = (int(rest[0]), int(rest[1]))
         state['safe_area'] = state['frame_size']
+    
+    def parse_img(rest):
+        yield "("
+        yield from iter(rest)
+        if len(rest) > 0:
+            yield "+append"
+        yield "-resize" 
+        yield f"{state['safe_area'][0]}x{state['safe_area'][1]}>"
+        yield "-extent"
+        yield f"{state['safe_area'][0]}x"
+        yield ")"
 
     lines = markup.split("\n")
     for line in lines:
@@ -58,22 +68,27 @@ def parse_markup(markup: str):
         if len(p) == 0:
             continue
 
-        if p[0] == ".gv":
-            yield from parse_gv(p[1:])
-        elif p[0] == ".vs":
-            yield from parse_vs(p[1:])
-        elif p[0] == ".bg":
-            yield from parse_bg(p[1:])
-        elif p[0] == ".fill":
-            yield from parse_fill(p[1:])
-        elif p[0] == ".font":
-            yield from parse_font(p[1:])
-        elif p[0] == ".pointsize":
-            yield from parse_pointsize(p[1:])
-        elif p[0] == ".safe_area":
-            parse_safe_area(p[1:])
-        elif p[0] == ".frame_size":
-            parse_frame_size(p[1:])
+        if p[0][0:1] == ".":
+            if p[0] == ".gv":
+                yield from parse_gv(p[1:])
+            elif p[0] == ".vs":
+                yield from parse_vs(p[1:])
+            elif p[0] == ".bg":
+                yield from parse_bg(p[1:])
+            elif p[0] == ".fill":
+                yield from parse_fill(p[1:])
+            elif p[0] == ".font":
+                yield from parse_font(p[1:])
+            elif p[0] == ".pointsize":
+                yield from parse_pointsize(p[1:])
+            elif p[0] == ".safe_area":
+                parse_safe_area(p[1:])
+            elif p[0] == ".frame_size":
+                parse_frame_size(p[1:])
+            elif p[0] == ".img":
+                yield from parse_img(p[1:])
+            else:
+                raise RuntimeError
         else:
             yield from parse_line(p)
 
@@ -96,24 +111,28 @@ def main():
 .fill white 
 .font /System/Library/Fonts/Supplemental/Futura.ttc
 .frame_size 1920 1080
-.safe_area 1720 880
+.safe_area 1620 780
+.gv Center
+.img JH.tiff JH.tiff 
 .gv West
 .pointsize 56
 TITLE / Artist / Company
-.vs 200
+.vs 120
+.gv West
 .pointsize 36
 This is some information on TITLE.
+.gv East
+Some right-aligned text.
 """
-
-
-    dims = {
-        "size": "1920x1080",    
-        "rate": 30,    
-        "duration": 5.000
-    }
 
     command = ["convert"] + list(parse_markup(markup_example)) + ["output_gen.tiff"]
     subprocess.run(command)
+
+   # dims = {
+   #     "size": "1920x1080",    
+   #     "rate": 30,    
+   #     "duration": 5.000
+   # }
 
    #  output_file = "output.tiff"
    #  tiff_text_frame(output=output_file, 
