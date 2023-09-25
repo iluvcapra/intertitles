@@ -1,6 +1,7 @@
 from ffmpeg import vfilters, vtools, avfilters, input, input_source
 
 import shlex
+import sys
 
 import subprocess
 
@@ -102,27 +103,10 @@ def parse_markup(markup: str):
 
 
 def main():
-    markup_example = """
-.bg none
-.fill white 
-.font /System/Library/Fonts/Supplemental/Futura.ttc
-.frame_size 1920 1080
-.safe_area 1620 780
-.gv Center
-.img 1.tiff 1.tiff 1.tiff 
-.gv West
-.textsize 56
-TITLE / Artist / Company
-.vs 120
-.gv West
-.textsize 36
-This is some information on TITLE.
-# .gv East
-# Some right-aligned text.
-"""
 
-    command = ["convert"] + list(parse_markup(markup_example)) + ["output_gen.tiff"]
-    subprocess.run(command)
+    with open(sys.argv[1], "r") as f:
+        command = ["convert"] + list(parse_markup(f.read())) + ["output_gen.tiff"]
+        subprocess.run(command)
 
    # dims = {
    #     "size": "1920x1080",    
